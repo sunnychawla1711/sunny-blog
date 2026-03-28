@@ -1,0 +1,15 @@
+{
+  "params":
+  {
+    "fb_url": "https://www.facebook.com/hemant.chawla.1291",
+    "insta_url": "https://www.instagram.com/sunnychawla_17/",
+    "tw_url": "https://x.com/sunnychawla1711",
+    "gh_url": "https://www.github.com/sunnychawla1711",
+    "blog_name": "Sunny Sphere",
+    "tag_line": "A blog for all the coding enthusiasts",
+    "about_text": "This is a blog created using Flask framework and is owned by Sunny Chawla.",
+    "no_of_posts": 2,
+    "login_image": "login.svg",
+    "upload_location": "static"
+  }
+}
