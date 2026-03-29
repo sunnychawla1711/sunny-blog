@@ -7,7 +7,7 @@
     "gh_url": "https://www.github.com/sunnychawla1711",
     "blog_name": "Sunny Sphere",
     "tag_line": "A blog for all the coding enthusiasts",
-    "about_text": "This is a blog created using Flask framework and is owned by Sunny Chawla.",
+    "about_text":"Welcome to Sunny Sphere 👋\n\nThis blog is proudly owned and managed by Sunny Chawla, created with the aim of sharing knowledge and real experiences in the field of programming and technology.\n\nI am a passionate learner and developer who believes that the best way to grow in tech is by building real-world projects and learning from mistakes.\n\nThrough this platform, I share:\n\nCoding tutorials\nWeb development insights\nProject experiences\nCareer guidance for students\n\nMy goal is to make learning simple, practical, and accessible for everyone who wants to start or grow in the tech world.\n\n🚀 Keep learning, keep building, and never stop improving!"",
     "no_of_posts": 2,
     "login_image": "login.svg",
     "upload_location": "static"
