@@ -37,6 +37,7 @@ mail = Mail(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 db = SQLAlchemy(app)
 
+
 # ---------------- MODELS ----------------
 
 class Contacts(db.Model):
@@ -55,6 +56,9 @@ class Posts(db.Model):
     date = db.Column(db.String(12), nullable=True)
     img_file = db.Column(db.String(12), nullable=True)
     tagline = db.Column(db.String(120), nullable=False)
+
+with app.app_context():
+    db.create_all()
 
 # ---------------- ROUTES ----------------
 
