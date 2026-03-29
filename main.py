@@ -9,7 +9,7 @@ from flask_mail import Mail
 from werkzeug.utils import secure_filename
 import math
 
-# Load config (only for non-sensitive data)
+# Load config
 with open('config.json','r') as c:
     params = json.load(c)["params"]
 
@@ -22,21 +22,20 @@ def inject_params():
 app.secret_key = 'super-secret-key'
 app.config['UPLOAD_FOLDER'] = params['upload_location']
 
-# ✅ MAIL CONFIG (FIXED)
+# MAIL CONFIG
 app.config.update(
-    MAIL_SERVER = 'smtp.gmail.com',
-    MAIL_PORT = '465',
-    MAIL_USE_SSL = True,
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME'),
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT='465',
+    MAIL_USE_SSL=True,
+    MAIL_USERNAME=os.environ.get('MAIL_USERNAME'),
+    MAIL_PASSWORD=os.environ.get('MAIL_PASSWORD')
 )
 
 mail = Mail(app)
 
-# ✅ DATABASE
+# DATABASE
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 db = SQLAlchemy(app)
-
 
 # ---------------- MODELS ----------------
 
@@ -57,6 +56,7 @@ class Posts(db.Model):
     img_file = db.Column(db.String(12), nullable=True)
     tagline = db.Column(db.String(120), nullable=False)
 
+# CREATE DB
 with app.app_context():
     db.create_all()
 
@@ -107,6 +107,47 @@ def dashboard():
 
     return render_template('login.html', params=params)
 
+# ✅ EDIT + ADD POST ROUTE
+@app.route('/edit/<string:sno>', methods=['GET', 'POST'])
+def edit(sno):
+
+    if 'user' in session and session['user'] == os.environ.get('ADMIN_USER'):
+
+        if request.method == 'POST':
+            try:
+                title = request.form.get('title')
+                tagline = request.form.get('tline')
+                slug = request.form.get('slug')
+                content = request.form.get('content')
+                img_file = request.form.get('img_file')
+                date = datetime.now()
+
+                if sno == '0':
+                    post = Posts(title=title, tagline=tagline, slug=slug,
+                                 content=content, img_file=img_file, date=date)
+                    db.session.add(post)
+                    db.session.commit()
+                else:
+                    post = Posts.query.filter_by(sno=sno).first()
+                    post.title = title
+                    post.tagline = tagline
+                    post.slug = slug
+                    post.content = content
+                    post.img_file = img_file
+                    post.date = date
+                    db.session.commit()
+
+                return redirect('/dashboard')
+
+            except Exception as e:
+                print("EDIT ERROR:", e)
+                return f"Error: {str(e)}"
+
+        post = Posts.query.filter_by(sno=sno).first()
+        return render_template('edit.html', params=params, post=post, sno=sno)
+
+    return redirect('/dashboard')
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
@@ -116,12 +157,10 @@ def contact():
             phone = request.form.get('phone')
             message = request.form.get('message')
 
-            # Save to DB
             entry = Contacts(name=name, phone_num=phone, msg=message, date=datetime.now(), email=email)
             db.session.add(entry)
             db.session.commit()
 
-            # Send Mail (SAFE)
             if os.environ.get('MAIL_USERNAME'):
                 mail.send_message(
                     'New message from ' + name,
@@ -134,7 +173,7 @@ def contact():
 
         except Exception as e:
             print("ERROR:", e)
-            return "Something went wrong. Try again."
+            return "Something went wrong."
 
     return render_template('contact.html', params=params)
 
