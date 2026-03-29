@@ -120,7 +120,7 @@ def edit(sno):
                 slug = request.form.get('slug')
                 content = request.form.get('content')
                 img_file = request.form.get('img_file')
-                date = datetime.now()
+                date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
                 if sno == '0':
                     post = Posts(title=title, tagline=tagline, slug=slug,
