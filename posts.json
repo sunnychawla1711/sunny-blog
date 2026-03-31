@@ -5,7 +5,8 @@
     "slug": "which-language-to-learn",
     "content": "If you're starting your coding journey, the first question that comes to mind is:\nWhich programming language should I learn first?\n\nWith so many options like Python, Java, and JavaScript, it’s easy to feel confused.\nThe truth is — there is no single “perfect” language, but there is a best choice depending on your goals.\n\n\nBefore picking a language, ask yourself:\nDo I want to go into web development?\nAm I interested in AI/ML?\nDo I want a job quickly?\nDo I prefer easy learning or deep concepts?\n\n\n1. Python (Best for Beginners)\nWhy choose Python?\nEasy to read and write (almost like English)\nHuge demand in AI, ML, Data Science\nBeginner-friendly syntax.\nBest for: Beginners, AI/ML, automation\nMy suggestion: Start here if you're confused\n\n\n2. JavaScript (Best for Web Development)\nWhy choose JavaScript?\nUsed in every website\nWorks on both frontend & backend (Node.js)\nHigh demand in startups\nBest for: Web development (React, Next.js)\n\n\n3. Java (Strong Foundation)\nWhy choose Java?\nObject-Oriented Programming (OOP)\nUsed in big companies\nGood for placements\nBest for: Strong fundamentals, corporate jobs\n\n\n4. C# (.NET) (Good for Your Path)\nWhy choose C#?\nUsed in .NET development\nGreat for backend & enterprise apps\nBest for: Backend, enterprise jobs",
     "tagline": "A beginner-friendly guide to choose your first coding language. My honest experience and lessons from starting coding",
-    "date": "15 Mar 2026"
+    "date": "15 Mar 2026",
+    "img_file": "post-bg.jpg"
   },
   {
         "sno":2,
@@ -13,7 +14,8 @@
     "slug": "first-lang",
     "content": "If you're starting your coding journey, choosing your first programming language can feel overwhelming.\nThe best beginner-friendly language today is Python. It has simple syntax, huge community support, and is used in AI, web development, and automation.\nIf you're interested in web development, you should also learn JavaScript, as it powers the frontend of websites.\nFor students in India, especially MCA or BCA, combining Python + Web Development is a great start.\n👉 My suggestion: Start with Python → then move to HTML, CSS, JS.",
     "tagline": "Confused about where to begin? Read this first.",
-    "date": "20 Mar 2026"
+    "date": "20 Mar 2026",
+    "img_file": "home-bg.jpg"
   },
     {
           "sno":3,
@@ -21,7 +23,8 @@
     "slug": "flask-vs-django",
     "content": "Flask and Django are both popular Python web frameworks, but they serve different purposes.\nFlask is lightweight and flexible. It's perfect for beginners and small projects like blogs.\nDjango is a full-fledged framework with built-in features like authentication and admin panel.\n👉 If you're learning → start with Flask\n👉 If you're building large apps → use Django",
     "tagline": "Flask or Django? Let’s clear the confusion",
-    "date": "24 Mar 2026"
+    "date": "24 Mar 2026",
+      "img_file": "home-bg.jpg"
   },
   {
         "sno":4,
@@ -29,6 +32,7 @@
     "slug": "top-mistakes",
     "content": "Every beginner makes mistakes — and that's completely normal./nHere are common mistakes:\n❌ Watching too many tutorials\n❌ Not practicing enough\n❌ Fear of errors\n❌ Not building projects\n❌ Giving up too early\n👉 The solution: Build, break, fix, repeat.",
     "tagline": "Avoid these mistakes and grow faster ⚡",
-    "date": "29 Mar 2026"
+    "date": "29 Mar 2026",
+    "img_file": "post-bg.jpg"
   }
 ]
