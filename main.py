@@ -3,14 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import pymysql
 import os
-pymysql.install_as_MySQLdb()
 import json
 from flask_mail import Mail
-from werkzeug.utils import secure_filename
-import math
+
+pymysql.install_as_MySQLdb()
 
 # Load config
-with open('config.json','r') as c:
+with open('config.json', 'r', encoding='utf-8') as c:
     params = json.load(c)["params"]
 
 app = Flask(__name__)
@@ -33,7 +32,7 @@ app.config.update(
 
 mail = Mail(app)
 
-# DATABASE
+# DATABASE (only for contact form)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 db = SQLAlchemy(app)
 
@@ -43,46 +42,52 @@ class Contacts(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     phone_num = db.Column(db.String(12), nullable=False)
-    msg = db.Column(db.String(120), nullable=False)
-    date = db.Column(db.String(12), nullable=True)
-    email = db.Column(db.String(20), nullable=False)
+    msg = db.Column(db.String(500), nullable=False)
+    date = db.Column(db.String(50), nullable=True)
+    email = db.Column(db.String(50), nullable=False)
 
-class Posts(db.Model):
-    sno = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), nullable=False)
-    slug = db.Column(db.String(21), nullable=False)
-    content = db.Column(db.String(120), nullable=False)
-    date = db.Column(db.String(12), nullable=True)
-    img_file = db.Column(db.String(12), nullable=True)
-    tagline = db.Column(db.String(120), nullable=False)
-
-# CREATE DB
 with app.app_context():
     db.create_all()
+
+# ---------------- JSON HELPERS ----------------
+
+def load_posts():
+    try:
+        with open('posts.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
 
 # ---------------- ROUTES ----------------
 
 @app.route('/')
 def home():
-    posts = Posts.query.all()
-    last = math.ceil(len(posts)/int(params['no_of_posts']))
+    posts = load_posts()
+    no_of_posts = int(params['no_of_posts'])
+
+    total_posts = len(posts)
+    last = (total_posts + no_of_posts - 1) // no_of_posts
+    if last == 0:
+        last = 1
 
     page = request.args.get('page')
     if not str(page).isnumeric():
         page = 1
     page = int(page)
 
-    posts = posts[(page-1)*int(params['no_of_posts']):(page-1)*int(params['no_of_posts'])+int(params['no_of_posts'])]
+    start = (page - 1) * no_of_posts
+    end = start + no_of_posts
+    posts = posts[start:end]
 
-    if page == 1:
+    if page <= 1:
         prev = "#"
-        next = "/?page=" + str(page+1)
-    elif page == last:
-        prev = "/?page=" + str(page-1)
+        next = "/?page=2" if total_posts > no_of_posts else "#"
+    elif page >= last:
+        prev = f"/?page={page-1}"
         next = "#"
     else:
-        prev = "/?page=" + str(page-1)
-        next = "/?page=" + str(page+1)
+        prev = f"/?page={page-1}"
+        next = f"/?page={page+1}"
 
     return render_template('index.html', params=params, posts=posts, prev=prev, next=next)
 
@@ -93,7 +98,7 @@ def about():
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if 'user' in session and session['user'] == os.environ.get('ADMIN_USER'):
-        posts = Posts.query.all()
+        posts = load_posts()
         return render_template('dashboard.html', params=params, posts=posts)
 
     if request.method == 'POST':
@@ -102,51 +107,10 @@ def dashboard():
 
         if username == os.environ.get('ADMIN_USER') and userpass == os.environ.get('ADMIN_PASSWORD'):
             session['user'] = username
-            posts = Posts.query.all()
+            posts = load_posts()
             return render_template('dashboard.html', params=params, posts=posts)
 
     return render_template('login.html', params=params)
-
-# ✅ EDIT + ADD POST ROUTE
-@app.route('/edit/<string:sno>', methods=['GET', 'POST'])
-def edit(sno):
-
-    if 'user' in session and session['user'] == os.environ.get('ADMIN_USER'):
-
-        if request.method == 'POST':
-            try:
-                title = request.form.get('title')
-                tagline = request.form.get('tline')
-                slug = request.form.get('slug')
-                content = request.form.get('content')
-                img_file = request.form.get('img_file')
-                date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-                if sno == '0':
-                    post = Posts(title=title, tagline=tagline, slug=slug,
-                                 content=content, img_file=img_file, date=date)
-                    db.session.add(post)
-                    db.session.commit()
-                else:
-                    post = Posts.query.filter_by(sno=sno).first()
-                    post.title = title
-                    post.tagline = tagline
-                    post.slug = slug
-                    post.content = content
-                    post.img_file = img_file
-                    post.date = date
-                    db.session.commit()
-
-                return redirect('/dashboard')
-
-            except Exception as e:
-                print("EDIT ERROR:", e)
-                return f"Error: {str(e)}"
-
-        post = Posts.query.filter_by(sno=sno).first()
-        return render_template('edit.html', params=params, post=post, sno=sno)
-
-    return redirect('/dashboard')
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -157,7 +121,13 @@ def contact():
             phone = request.form.get('phone')
             message = request.form.get('message')
 
-            entry = Contacts(name=name, phone_num=phone, msg=message, date=datetime.now(), email=email)
+            entry = Contacts(
+                name=name,
+                phone_num=phone,
+                msg=message,
+                date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                email=email
+            )
             db.session.add(entry)
             db.session.commit()
 
@@ -179,12 +149,22 @@ def contact():
 
 @app.route("/post/<string:post_slug>")
 def post_route(post_slug):
-    post = Posts.query.filter_by(slug=post_slug).first()
+    posts = load_posts()
+    post = None
+
+    for p in posts:
+        if p['slug'] == post_slug:
+            post = p
+            break
+
+    if post is None:
+        return "Post not found", 404
+
     return render_template('post.html', params=params, post=post)
 
 @app.route('/logout')
 def logout():
-    session.pop('user')
+    session.pop('user', None)
     return redirect('/dashboard')
 
 if __name__ == "__main__":
